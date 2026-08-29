@@ -25,7 +25,7 @@ st.markdown("""
 
     /* 2. 在左側導航欄最上方自動渲染專屬品牌卡片 (精緻排版) */
     [data-testid="stSidebarNav"]::before {
-        content: "澄璞財務顧問工作室\\A JennyHsieh CFP®\\A 筱筑";
+        content: "澄璞財務顧問工作室\\A JennyHsieh CFP®";
         white-space: pre-wrap;
         display: block;
         margin: 12px 14px 18px 14px;
