@@ -1,8 +1,7 @@
 streamlit
 yfinance
-fredapi
+plotly
 pandas
 numpy
-pandas_ta
-plotly
-python-dotenv
+beautifulsoup4
+lxml
