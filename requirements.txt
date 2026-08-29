@@ -1,0 +1,8 @@
+streamlit
+yfinance
+fredapi
+pandas
+numpy
+pandas_ta
+plotly
+python-dotenv
