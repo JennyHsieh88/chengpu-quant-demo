@@ -59,27 +59,29 @@ st.markdown("""
         text-overflow: unset !important;
     }
 
-    /* 5. 分頁 Tab 標籤樣式優化 */
-    div[data-baseweb="tab-list"] {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-        border-bottom: 2px solid #ECEFF1 !important;
-        padding-bottom: 6px !important;
-    }
-    button[data-baseweb="tab"] {
-        font-size: 1.08rem !important;
+    /* 5. 網格按鈕卡片樣式美化 */
+    div.stButton > button {
+        width: 100% !important;
+        min-height: 52px !important;
+        font-size: 1.02rem !important;
         font-weight: 600 !important;
-        padding: 8px 16px !important;
-        border-radius: 6px !important;
-        background-color: #F8F9FA !important;
-        border: 1px solid #E2E8F0 !important;
-        margin-right: 4px !important;
+        border-radius: 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        background-color: #F8FAFC !important;
+        color: #1E293B !important;
+        transition: all 0.2s ease;
+        padding: 8px 12px !important;
     }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        background-color: #E3F2FD !important;
-        border-color: #1E88E5 !important;
-        color: #1565C0 !important;
+    div.stButton > button:hover {
+        border-color: #0284C7 !important;
+        color: #0284C7 !important;
+        background-color: #F0F9FF !important;
+    }
+    div.stButton > button[kind="primary"] {
+        background-color: #E0F2FE !important;
+        border-color: #0284C7 !important;
+        color: #0369A1 !important;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.18) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -92,6 +94,9 @@ if 'current_ticker' not in st.session_state:
 
 if 'ticker_input_top_p1' not in st.session_state:
     st.session_state['ticker_input_top_p1'] = st.session_state['current_ticker']
+
+if 'active_tab_p1' not in st.session_state:
+    st.session_state['active_tab_p1'] = "tab1"
 
 def update_ticker_top_p1():
     val = st.session_state.get('ticker_input_top_p1', '').upper().strip()
@@ -135,14 +140,12 @@ def fetch_ticker_close_safe(symbol, fallback=100.0):
 
 @st.cache_data(ttl=600)
 def fetch_global_macro_data(symbol: str):
-    # 即時抓取美債與主要資產（最新真實市場行情）
     tnx_hist, us10y_yield, us10y_chg = fetch_ticker_close_safe("^TNX", fallback=4.73)
     dxy_hist, dxy_val, dxy_chg = fetch_ticker_close_safe("DX-Y.NYB", fallback=99.11)
     gold_hist, gold_val, gold_chg = fetch_ticker_close_safe("GC=F", fallback=4640.0)
     oil_hist, oil_val, oil_chg = fetch_ticker_close_safe("CL=F", fallback=80.35)
     sp500_hist, sp500_val, sp500_chg = fetch_ticker_close_safe("^GSPC", fallback=7670.0)
 
-    # 基準利率與勞動數據
     fed_funds_target = "3.50% ~ 3.75%"
     effr_rate = 3.63
     us2y_yield = 4.35
@@ -153,7 +156,6 @@ def fetch_global_macro_data(symbol: str):
     nonfarm_latest = -23
     wage_growth_yoy = 3.2
 
-    # 個股行情
     stock = yf.Ticker(symbol)
     info = stock.info or {}
     curr_p = info.get('currentPrice') or info.get('regularMarketPrice') or 100.0
@@ -166,7 +168,6 @@ def fetch_global_macro_data(symbol: str):
     unemp_trend = [4.3, 4.3, 4.3, 4.3, 4.2, 4.1]
     nonfarm_trend = [115, 98, 85, 63, 20, -23]
 
-    # FOMC 官方 SEP 點陣圖（反映 Higher for Longer，2026 中位數 3.875%）
     dot_plot_data = {
         '2026': [3.625, 3.625, 3.625, 3.625, 3.875, 3.875, 3.875, 3.875, 3.875, 3.875, 3.875, 3.875, 4.125, 4.125, 4.125, 4.125, 4.375, 4.375, 4.625],
         '2027': [3.125, 3.125, 3.375, 3.375, 3.375, 3.625, 3.625, 3.625, 3.625, 3.625, 3.625, 3.875, 3.875, 3.875, 3.875, 4.125, 4.125, 4.375, 4.375],
@@ -180,7 +181,6 @@ def fetch_global_macro_data(symbol: str):
         'Longer Run': 3.100
     }
 
-    # 市場 Jackson Hole 會後最新真實隱含路徑（殖利率攀升，市場推遲降息預期）
     market_implied_medians = {
         '2026': 3.85,
         '2027': 3.65,
@@ -188,7 +188,6 @@ def fetch_global_macro_data(symbol: str):
         'Longer Run': 3.20
     }
 
-    # CME FedWatch 最新真實定價矩陣（Jackson Hole 會後按兵不動機率佔主流）
     fed_prob_df = pd.DataFrame({
         'FOMC 會議時間': ['2026 年 9 月 (下次會議)', '2026 年 11 月', '2026 年 12 月'],
         '維持利率不變 (3.50%~3.75%)': ['63.5%', '47.3%', '38.2%'],
@@ -248,7 +247,7 @@ with col_p:
 st.divider()
 
 # ==========================================
-# 頂部六大核心宏觀與勞動指標卡（真實市場數值）
+# 頂部六大核心宏觀與勞動指標卡
 # ==========================================
 r1_c1, r1_c2, r1_c3 = st.columns(3)
 r1_c1.metric("🏛️ FED 聯邦基金目標區間", macro['fed_funds_target'], f"EFFR 實效: {macro['effr_rate']:.2f}% (維持高檔耐心觀望)")
@@ -263,17 +262,49 @@ r2_c3.metric("🛢️ WTI 原油價格", f"${macro['oil_val']:.2f} / 桶", f"{ma
 st.markdown("---")
 
 # ==========================================
-# 五大子分頁（完全對齊市場真實現況）
+# 3*2 網格導航矩陣 (全貌展開，徹底無箭頭)
 # ==========================================
-m_tab1, m_tab2, m_tab3, m_tab4, m_tab5 = st.tabs([
-    "📈 一、美國公債殖利率曲線與倒掛利差 (Yield Curve)",
-    "💼 二、勞動市場就業與失業率 (Labor & Employment)",
-    "💵 三、美元指數 (DXY) 與全球貨幣流動性 (Liquidity)",
-    "🥇 四、大宗商品定價與通膨預期 (Gold & Oil)",
-    "🏦 五、聯準會利率路徑與官方點陣圖 (Dot Plot & Fed Policy)"
-])
+st.markdown("##### 🧭 總體經濟與貨幣流動性 — 細項功能選單")
 
-with m_tab1:
+g_row1_c1, g_row1_c2, g_row1_c3 = st.columns(3)
+g_row2_c1, g_row2_c2, g_row2_c3 = st.columns(3)
+
+with g_row1_c1:
+    if st.button("📈 一、美債殖利率曲線與倒掛利差", type="primary" if st.session_state['active_tab_p1'] == "tab1" else "secondary", use_container_width=True):
+        st.session_state['active_tab_p1'] = "tab1"
+        st.rerun()
+
+with g_row1_c2:
+    if st.button("💼 二、勞動市場就業與失業率", type="primary" if st.session_state['active_tab_p1'] == "tab2" else "secondary", use_container_width=True):
+        st.session_state['active_tab_p1'] = "tab2"
+        st.rerun()
+
+with g_row1_c3:
+    if st.button("💵 三、美元指數與全球貨幣流動性", type="primary" if st.session_state['active_tab_p1'] == "tab3" else "secondary", use_container_width=True):
+        st.session_state['active_tab_p1'] = "tab3"
+        st.rerun()
+
+with g_row2_c1:
+    if st.button("🥇 四、大宗商品定價與通膨預期", type="primary" if st.session_state['active_tab_p1'] == "tab4" else "secondary", use_container_width=True):
+        st.session_state['active_tab_p1'] = "tab4"
+        st.rerun()
+
+with g_row2_c2:
+    if st.button("🏦 五、聯準會利率路徑與官方點陣圖", type="primary" if st.session_state['active_tab_p1'] == "tab5" else "secondary", use_container_width=True):
+        st.session_state['active_tab_p1'] = "tab5"
+        st.rerun()
+
+with g_row2_c3:
+    st.markdown("<div style='height: 52px; background: #F1F5F9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-weight: 600; font-size: 0.95rem;'>✦ 澄璞宏觀量化終端 ✦</div>", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ==========================================
+# 依選取狀態渲染對應功能內容
+# ==========================================
+active = st.session_state['active_tab_p1']
+
+if active == "tab1":
     st.markdown("### 📈 一、美債殖利率曲線結構與 10Y-2Y 利差狀態")
     col_y1, col_y2 = st.columns([1.3, 1])
     
@@ -309,9 +340,8 @@ with m_tab1:
     2. **利差轉正背後涵義**：代表市場擺脫硬著陸衰退陰影，但仍需密切關注融資成本對企業資本開支的抑制作用。
     """)
 
-with m_tab2:
+elif active == "tab2":
     st.markdown("### 💼 二、美國非農就業人口變動與失業率趨勢 (BLS Labor Market)")
-    
     col_l1, col_l2 = st.columns([1.3, 1])
     with col_l1:
         fig_labor = make_subplots(specs=[[{"secondary_y": True}]])
@@ -345,7 +375,7 @@ with m_tab2:
     2. **薪資增速保持 3% 以上**：反映服務業通膨仍具黏性，是央行持續維持限制性政策的主要考量。
     """)
 
-with m_tab3:
+elif active == "tab3":
     st.markdown("### 💵 三、美元指數 (DXY) 趨勢與全球資產負債表")
     if not macro['dxy_hist'].empty:
         fig_dxy = go.Figure(go.Scatter(
@@ -362,7 +392,7 @@ with m_tab3:
     2. **全球利差交易動態**：若美國政策利率維持高檔，將持續吸引跨國資本停留在美元計價資產。
     """)
 
-with m_tab4:
+elif active == "tab4":
     st.markdown("### 🥇 四、黃金與原油價格走勢 (抗通膨與能源成本)")
     col_c1, col_c2 = st.columns(2)
 
@@ -386,7 +416,7 @@ with m_tab4:
     - **原油維持 $80/桶 區間**：油價維持偏強，構成整體 CPI 通膨下行的阻力。
     """)
 
-with m_tab5:
+elif active == "tab5":
     st.markdown("### 🏦 五、聯準會官方點陣圖 vs 市場即時隱含路徑 (Dot Plot & Market Implied)")
     
     dot_df_list = []
@@ -399,7 +429,6 @@ with m_tab5:
             
     fig_dots = go.Figure()
     
-    # 1. 官方委員預測點 (SEP Dots)
     for yr in ['2026', '2027', '2028', 'Longer Run']:
         sub = [d for d in dot_df_list if d['Year'] == yr]
         x_numeric = {'2026': 0, '2027': 1, '2028': 2, 'Longer Run': 3}[yr]
@@ -414,7 +443,6 @@ with m_tab5:
             showlegend=False
         ))
 
-    # 2. 官方中位數路徑 (SEP Median)
     median_x = [0, 1, 2, 3]
     median_y = [macro['dot_medians']['2026'], macro['dot_medians']['2027'], macro['dot_medians']['2028'], macro['dot_medians']['Longer Run']]
     fig_dots.add_trace(go.Scatter(
@@ -427,7 +455,6 @@ with m_tab5:
         textfont=dict(color='#C0392B', size=11, family='Arial Black')
     ))
 
-    # 3. 市場即時隱含路徑 (Jackson Hole 會後最新期貨定價)
     mkt_y = [
         macro['market_implied_medians']['2026'],
         macro['market_implied_medians']['2027'],
