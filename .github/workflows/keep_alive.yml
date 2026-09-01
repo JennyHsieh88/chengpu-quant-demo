@@ -1,0 +1,15 @@
+name: Keep Streamlit Alive
+
+on:
+  schedule:
+    # 每 2 天自動造訪一次
+    - cron: '0 0 */2 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Streamlit App
+        run: |
+          curl -I -s -L "https://jennyhsieh88.github.io/chengpu-quant-demo/" > /dev/null
