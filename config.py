@@ -152,7 +152,7 @@ def inject_global_style():
         `;
         sidebarNav.insertBefore(brandCard, sidebarNav.firstChild);
 
-        // 插入 12 大模組完整分類標籤
+        // 插入 12 大模組完整分類標籤（修正 03 頁歸類至總體與市場氛圍）
         const navUl = sidebarNav.querySelector('ul');
         if (!navUl) return;
 
@@ -160,8 +160,8 @@ def inject_global_style():
             {{ text: "決策總覽首頁", title: "▌ 決策總覽" }},
             {{ text: "總體環境監控", title: "▌ 總體與市場氛圍" }},
             {{ text: "市場氛圍與流動性", title: "" }},
-            {{ text: "板塊輪動與資金流向", title: "▌ 個股深度研究" }},
-            {{ text: "產業同儕估值", title: "" }},
+            {{ text: "板塊輪動與資金流向", title: "" }},
+            {{ text: "產業同儕估值", title: "▌ 個股深度研究" }},
             {{ text: "個股基本面深度庫", title: "" }},
             {{ text: "技術面與量價動量", title: "" }},
             {{ text: "華爾街共識與籌碼", title: "" }},
