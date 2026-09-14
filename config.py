@@ -43,7 +43,7 @@ def inject_global_style():
             overflow: visible !important;
         }
 
-        /* 僅隱藏一般按鈕，保留側邊欄的展開更多按鈕以確保顯示所有頁面 */
+        /* 僅隱藏一般按鈕，保留側邊欄展開功能 */
         div[data-testid="stSidebarNav"] button {
             display: none !important;
         }
@@ -156,8 +156,8 @@ def inject_global_style():
             {{ text: "決策總覽首頁", title: "▌ 決策總覽" }},
             {{ text: "總體環境監控", title: "▌ 總體與市場氛圍" }},
             {{ text: "市場氛圍與流動性", title: "" }},
-            {{ text: "板塊輪動與資金流向", title: "" }},
-            {{ text: "產業同儕估值", title: "▌ 個股深度研究" }},
+            {{ text: "板塊輪動與資金流向", title: "▌ 個股深度研究" }},
+            {{ text: "產業同儕估值", title: "" }},
             {{ text: "個股基本面深度庫", title: "" }},
             {{ text: "技術面與量價動量", title: "" }},
             {{ text: "華爾街共識與籌碼", title: "" }},
@@ -165,7 +165,7 @@ def inject_global_style():
             {{ text: "綜合決策與多空評分", title: "" }},
             {{ text: "資產配置與前瞻推估", title: "▌ 資產配置與模擬" }},
             {{ text: "智慧投組回測與前瞻推估", title: "" }},
-            {{ text: "全球金融即時要聞", title: "▌ 市場要聞" }}
+            {{ text: "全球金融即時要聞與市場脈動", title: "▌ 市場要聞" }}
         ];
 
         const listItems = navUl.querySelectorAll('li');
