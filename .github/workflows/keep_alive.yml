@@ -1,15 +1,15 @@
-name: Keep Streamlit Alive
+name: Keep Streamlit App Alive
 
 on:
   schedule:
-    # 每 2 天自動造訪一次
-    - cron: '0 0 */2 * *'
-  workflow_dispatch:
+    # 每隔 4 小時自動執行一次，確保網站保持清醒
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # 允許手動點擊觸發
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Streamlit App
+      - name: Send HTTP request to wake up app
         run: |
-          curl -I -s -L "https://jennyhsieh88.github.io/chengpu-quant-demo/" > /dev/null
+          curl -s -o /dev/null -w "%{http_code}\n" https://chengpu-quant-demo.streamlit.app/
