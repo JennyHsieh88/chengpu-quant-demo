@@ -21,7 +21,7 @@ def inject_global_style():
             except Exception:
                 pass
 
-    # 2. 全站背景色與側邊欄樣式
+    # 2. 全站背景色與側邊欄樣式（已移除會隱藏側邊欄展開按鈕的限制）
     st.markdown("""
     <style>
         .stApp {
@@ -41,11 +41,6 @@ def inject_global_style():
             max-height: none !important;
             height: auto !important;
             overflow: visible !important;
-        }
-
-        /* 僅隱藏一般按鈕，保留側邊欄展開功能 */
-        div[data-testid="stSidebarNav"] button {
-            display: none !important;
         }
 
         div[data-testid="stSidebarNav"] li {
