@@ -21,7 +21,7 @@ def inject_global_style():
             except Exception:
                 pass
 
-    # 2. 全站背景色與側邊欄樣式（已移除會隱藏側邊欄展開按鈕的限制）
+    # 2. 全站背景色與側邊欄樣式
     st.markdown("""
     <style>
         .stApp {
@@ -83,13 +83,19 @@ def inject_global_style():
     else:
         avatar_html = '<div style="width:84px; height:84px; border-radius:50%; background:#0F766E; color:#FFF; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:800; margin:0 auto; border:2.5px solid #0F766E;">JH</div>'
 
-    # 4. 強制每次刷新名片卡與完整 12 模組側邊欄分類
+    # 4. 強制每次刷新名片卡、自動點擊展開按鈕並排版 12 模組
     components.html(f"""
     <script>
     function forceUpdateBrand() {{
         const doc = window.parent.document;
         const sidebarNav = doc.querySelector('div[data-testid="stSidebarNav"]');
         if (!sidebarNav) return;
+
+        // 💥 自動點擊 Streamlit 的「View more」按鈕，讓隱藏分頁直接展開
+        const viewMoreBtn = sidebarNav.querySelector('button');
+        if (viewMoreBtn && (viewMoreBtn.innerText.includes('more') || viewMoreBtn.innerText.includes('更多'))) {{
+            viewMoreBtn.click();
+        }}
 
         // 💥 強制移除所有舊名片盒，確保每次都讀取最新樣式
         const oldCards = doc.querySelectorAll('#chengpu-brand-header-card');
