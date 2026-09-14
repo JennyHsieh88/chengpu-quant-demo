@@ -43,8 +43,8 @@ def inject_global_style():
             overflow: visible !important;
         }
 
-        div[data-testid="stSidebarNav"] button,
-        div[data-testid="stSidebarNav"] [data-testid="stSidebarNavViewMore"] {
+        /* 僅隱藏一般按鈕，保留側邊欄的展開更多按鈕以確保顯示所有頁面 */
+        div[data-testid="stSidebarNav"] button {
             display: none !important;
         }
 
