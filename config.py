@@ -88,7 +88,7 @@ def inject_global_style():
     else:
         avatar_html = '<div style="width:84px; height:84px; border-radius:50%; background:#0F766E; color:#FFF; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:800; margin:0 auto; border:2.5px solid #0F766E;">JH</div>'
 
-    # 4. 強制每次刷新名片卡（筑字改用醒目紫羅蘭色 #7C3AED）
+    # 4. 強制每次刷新名片卡與完整 12 模組側邊欄分類
     components.html(f"""
     <script>
     function forceUpdateBrand() {{
@@ -129,7 +129,7 @@ def inject_global_style():
                     <span style="background:#0F766E; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px; letter-spacing:0.5px;">CFP®</span>
                 </div>
 
-                <!-- Slogan 標語卡（筑字改用醒目紫羅蘭色 #7C3AED） -->
+                <!-- Slogan 標語卡 -->
                 <div style="
                     background: #FFFFFF;
                     border: 1px dashed #D6CBC1;
@@ -148,16 +148,23 @@ def inject_global_style():
         `;
         sidebarNav.insertBefore(brandCard, sidebarNav.firstChild);
 
-        // 插入分類標籤
+        // 插入 12 大模組完整分類標籤
         const navUl = sidebarNav.querySelector('ul');
         if (!navUl) return;
 
         const mapping = [
             {{ text: "決策總覽首頁", title: "▌ 決策總覽" }},
             {{ text: "總體環境監控", title: "▌ 總體與市場氛圍" }},
+            {{ text: "市場氛圍與流動性", title: "" }},
+            {{ text: "板塊輪動與資金流向", title: "" }},
             {{ text: "產業同儕估值", title: "▌ 個股深度研究" }},
+            {{ text: "個股基本面深度庫", title: "" }},
+            {{ text: "技術面與量價動量", title: "" }},
+            {{ text: "華爾街共識與籌碼", title: "" }},
             {{ text: "訂單流與另類數據", title: "▌ 進階數據與評分" }},
+            {{ text: "綜合決策與多空評分", title: "" }},
             {{ text: "資產配置與前瞻推估", title: "▌ 資產配置與模擬" }},
+            {{ text: "智慧投組回測與前瞻推估", title: "" }},
             {{ text: "全球金融即時要聞", title: "▌ 市場要聞" }}
         ];
 
@@ -168,7 +175,7 @@ def inject_global_style():
             const content = anchor.innerText;
 
             mapping.forEach(m => {{
-                if (content.includes(m.text)) {{
+                if (content.includes(m.text) && m.title !== "") {{
                     const prevElem = li.previousElementSibling;
                     if (!prevElem || !prevElem.classList.contains('custom-sidebar-cat-header')) {{
                         const headerDiv = doc.createElement('div');
